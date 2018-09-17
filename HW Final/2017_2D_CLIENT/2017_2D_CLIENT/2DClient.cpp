@@ -13,10 +13,14 @@
 
 #include <d3d9.h>     // directX includes
 #include "d3dx9tex.h"     // directX includes
+
 #include "gpdumb1.h"
+#include "..\..\2017Server\2017Server\enum.h"
 #include "..\..\2017Server\2017Server\protocol.h"
+
 #include <fstream>
 #include <iostream>
+
 using namespace std;
 #pragma comment (lib, "ws2_32.lib")
 

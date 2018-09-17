@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="IOCPServer">
+      <UniqueIdentifier>{5860ee7e-77ee-46bd-b5c2-f50ce7162b24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pool">
+      <UniqueIdentifier>{8aba60dd-0ea9-47a4-a0c6-45176f7c38b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pool\Object">
+      <UniqueIdentifier>{1c54c3c2-3966-48da-8100-4c3ce741d166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pool\Momery">
+      <UniqueIdentifier>{01e0775d-a446-4ac1-bf57-f9b9ec254912}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua">
+      <UniqueIdentifier>{53aeecc2-42b6-433b-bffc-8ea9286744e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Thread">
+      <UniqueIdentifier>{003488fa-9809-447a-a170-c319fa7057f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{c07029be-cdec-483d-9c35-14590d9b4229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Obj">
+      <UniqueIdentifier>{3b9c64cf-b6ea-4722-9a3a-3259f7bfdb82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Obj\Player">
+      <UniqueIdentifier>{1314b94c-dde9-45f6-a785-b4215cec1d48}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="protocol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CIocp.h">
+      <Filter>IOCPServer</Filter>
+    </ClInclude>
+    <ClInclude Include="CMemoryPool.h">
+      <Filter>Pool\Momery</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjectPool.h">
+      <Filter>Pool\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="struct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lauxlib.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="luaconf.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lualib.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="CThread.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameTimer.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>Obj\Player</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mons.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lua53.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="server_main.cpp" />
+    <ClCompile Include="CIocp.cpp">
+      <Filter>IOCPServer</Filter>
+    </ClCompile>
+    <ClCompile Include="CMemoryPool.cpp">
+      <Filter>Pool\Momery</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjectPool.cpp">
+      <Filter>Pool\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="CThread.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameTimer.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>Obj\Player</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
