@@ -5,8 +5,8 @@
 
 CMemoryPool::CMemoryPool()
 {
-	m_CurrBlockCount = 0;
 	m_BlockAddr = 0;
+	m_StartPoint = 0;
 }
 
 
@@ -35,8 +35,6 @@ void* CMemoryPool::Allocate(size_t alloc_size)
 
 	// ²ËÃ¡³Ä?
 	if (0 == m_CurrBlockCount) return 0;
-
-
 
 	UCHAR* newblock = m_StartPoint + (alloc_size * m_BlockAddr);
 	m_BlockAddr = *newblock;

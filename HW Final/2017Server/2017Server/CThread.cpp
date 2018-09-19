@@ -4,7 +4,6 @@
 
 CLIENT* g_clients[NUM_OF_NPC];
 
-CObjectPool* CObjectPool::Instance = nullptr;
 
 
 int API_get_x(lua_State *L)
@@ -104,10 +103,6 @@ void CThread::Initialize_Server()
 
 void CThread::Initialize_NPC()
 {
-
-	for (auto& cl : g_clients)
-		cl = new CLIENT;
-	
 	//순서대로 가운데 위오 아왼  
 	SetPos(108, 148, 60, 230, NPC_START, 2000);
 	SetPos(167, 298, 30, 60, 2000, 2050);
@@ -115,7 +110,6 @@ void CThread::Initialize_NPC()
 
 	for (int i = NPC_START; i < NUM_OF_NPC; ++i) {
 
-		g_clients[i] = OBJPOOL->getObject();
 		//cout << g_clients[i] << endl;
 		g_clients[i]->last_move_time = std::chrono::high_resolution_clock::now();
 		g_clients[i]->connect = false;
@@ -200,7 +194,6 @@ void CThread::Accept_Thread()
 		strcpy(client_id, id_buf);
 		cout << client_id << endl;
 
-		g_clients[new_id] = OBJPOOL->getObject();
 		g_clients[new_id]->SetInitiate();
 		g_clients[new_id]->client_socket = new_client;
 		ZeroMemory(&g_clients[new_id]->recv_over, sizeof(g_clients[new_id]->recv_over));
@@ -265,22 +258,16 @@ void CThread::Worker_Thread()
 		unsigned long long ci;
 		OverlappedEx *over;
 		BOOL ret = m_iocp.GQCS(&io_size, &ci, reinterpret_cast<LPWSAOVERLAPPED *>(&over));
-
-		//		std::cout << "GQCS :";
 		if (FALSE == ret) {
 			int err_no = WSAGetLastError();
 			if (64 == err_no)
 				DisconnectClient(ci);
-			//error_display("GQCS : ", WSAGetLastError());
-			//			std::cout << "Error in GQCS\n";
 		}
 		if (0 == io_size) {
 			DisconnectClient(ci);
 			continue;
 		}
 		if (OP_RECV == over->event_type) {
-			//std::cout << "RECV from Client :" << ci;
-			//std::cout << "  IO_SIZE : " << io_size << std::endl;
 			unsigned char *buf = g_clients[ci]->recv_over.IOCP_buf;
 			unsigned psize = g_clients[ci]->curr_packet_size;
 			unsigned pr_size = g_clients[ci]->prev_packet_data;
@@ -336,7 +323,6 @@ void CThread::Worker_Thread()
 		}
 		else if (OP_RESPAWN == over->event_type)
 		{
-			//std::cout << " RESP" << std::endl;
 			NPC_Respawn(ci);
 			delete over;
 		}
@@ -447,7 +433,6 @@ void CThread::NPC_Respawn(int npc)
 		for (int i = 0; i < MAX_USER; ++i)
 			if (g_clients[i]->connect)
 				SendPutPlayerPacket(i, npc);
-		OBJPOOL->ReleaseObject(g_clients[npc]);
 	}
 
 	Timer_Event t = { npc, high_resolution_clock::now() + 5s, E_RESPAWN };
@@ -709,12 +694,12 @@ void CThread::DisconnectClient(int ci)
 	g_clients[ci]->vl_lock.lock();
 	g_clients[ci]->view_list.clear();
 	g_clients[ci]->vl_lock.unlock();
+	delete[] g_clients;
 }
 
 void CThread::Player_Respawn(int ci)
 {
 	if (g_clients[ci]->die) {
-		g_clients[ci] = OBJPOOL->getObject();
 		g_clients[ci]->die = false;
 		g_clients[ci]->hp = 100;
 		g_clients[ci]->x = 4;
@@ -757,13 +742,10 @@ void CThread::Buy_State(int ci, unsigned char packet[])
 void CThread::ProcessPacket(int ci, unsigned char packet[])
 {
 	cs_packet_up *my_packet = reinterpret_cast<cs_packet_up*>(packet);
-
 	if (g_clients[ci]->die) return;
-
 	int mapx = g_clients[ci]->x, mapy = g_clients[ci]->y;
 	switch (packet[1])
 	{
-
 	case CS_UP:
 		if (BG != g_map[mapx][mapy - 1])
 			if (g_clients[ci]->y > 0) g_clients[ci]->y--; break;
@@ -907,7 +889,6 @@ void CThread::NPC_Attack(int id)
 			if (g_clients[i]->hp <= 0) {
 				for (int j = 0; j < MAX_USER; ++j)
 					if (g_clients[j]->connect) {
-						OBJPOOL->ReleaseObject(g_clients[j]);
 						Timer_Event t = { i, high_resolution_clock::now() + 2s, E_REVIVAL };
 						tq_lock.lock();
 						timer_queue.push(t);

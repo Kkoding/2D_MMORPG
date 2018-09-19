@@ -4,12 +4,14 @@ class CObjectPool
 private:
 	list<CLIENT*> m_obj;
 
+	
 public:
 	CLIENT * getObject();
 	void ReleaseObject(CLIENT* obj);
 
-
 	static CObjectPool* Instance;
+
+
 public:
 	static CObjectPool * getInstance()
 	{

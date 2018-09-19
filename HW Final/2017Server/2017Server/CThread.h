@@ -8,9 +8,9 @@ public:
 		return first.exec_time > second.exec_time;
 	}
 };
+class CMemoryPool;
 
 
-class CObjectPool;
 
 class CThread
 {
@@ -78,7 +78,7 @@ public:
 	void Shutdown_Server()
 	{
 		closesocket(m_listenSocket);
-
+		
 		m_iocp.~CIocp();
 		WSACleanup();
 	}

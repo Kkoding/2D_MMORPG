@@ -41,15 +41,15 @@ using namespace chrono;
 
 #include "luaconf.h"
 #include "enum.h"
-#include "struct.h"
 #include "protocol.h"
+#include "CMemoryPool.h"
 
 
 #include "CGameTimer.h"
 #include "CIocp.h"
-#include "CObjectPool.h"
 extern CLIENT* g_clients[NUM_OF_NPC];
 
 #include "CThread.h"
 #include "CPlayer.h"
+
 

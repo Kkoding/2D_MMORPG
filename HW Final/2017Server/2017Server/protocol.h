@@ -1,7 +1,5 @@
 #include<Windows.h>
-#include <unordered_set>
-#include <mutex>
-#include "..\..\2017Server\2017Server\lua.h"
+#include "CMemoryPool.h"
 
 #define MAX_BUFF_SIZE   4000
 #define MAX_PACKET_SIZE  255
@@ -14,7 +12,7 @@
 
 #define VIEW_RADIUS   10
 
-#define MAX_USER 999	
+#define MAX_USER 10	
 
 #define NPC_START  1000
 //#define NUM_OF_NPC  10000
@@ -145,6 +143,15 @@ struct OverlappedEx {
 	int event_target;
 };
 
+
+
+struct Timer_Event {
+	int object_id;
+	high_resolution_clock::time_point exec_time;
+	Event_Type event;
+};
+
+
 struct CLIENT {
 	int x;
 	int y;
@@ -183,10 +190,22 @@ struct CLIENT {
 	int monster_level;
 	bool die;
 	int exp_sum;
-	std::chrono::high_resolution_clock::time_point revival_time;
-	std::chrono::high_resolution_clock::time_point active_time;
-	
+	high_resolution_clock::time_point revival_time;
+	high_resolution_clock::time_point active_time;
 
+
+	CLIENT()
+	{
+		x = 4;
+		y = 4;
+		curr_packet_size = 0;
+		prev_packet_data = 0;
+		die = false;
+		maxhp = 100;
+		connect = true;
+		exp = 0;
+
+	}
 	void Reset()
 	{
 		hp = 0;
@@ -206,15 +225,20 @@ struct CLIENT {
 		exp = 0;
 
 	}
-	
+
+protected:
+	static CMemoryPool * m_MemPool;
+
+public:
+	void* operator new(ULONGLONG block) {
+		if (!m_MemPool) m_MemPool = new CMemoryPool;
+		return m_MemPool->Allocate(block);
+	}
+
+	void operator delete(void* BlockDelete, ULONGLONG block_size)
+	{
+		m_MemPool->Delocate(BlockDelete, block_size);
+	}
+
 };
-
-
-struct Timer_Event {
-	int object_id;
-	std::chrono::high_resolution_clock::time_point exec_time;
-	Event_Type event;
-};
-
-
 #pragma pack (pop)
