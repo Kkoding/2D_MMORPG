@@ -15,9 +15,6 @@
     <Filter Include="Pool">
       <UniqueIdentifier>{8aba60dd-0ea9-47a4-a0c6-45176f7c38b4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Pool\Object">
-      <UniqueIdentifier>{1c54c3c2-3966-48da-8100-4c3ce741d166}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Pool\Momery">
       <UniqueIdentifier>{01e0775d-a446-4ac1-bf57-f9b9ec254912}</UniqueIdentifier>
     </Filter>
@@ -30,12 +27,6 @@
     <Filter Include="Timer">
       <UniqueIdentifier>{c07029be-cdec-483d-9c35-14590d9b4229}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Obj">
-      <UniqueIdentifier>{3b9c64cf-b6ea-4722-9a3a-3259f7bfdb82}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Obj\Player">
-      <UniqueIdentifier>{1314b94c-dde9-45f6-a785-b4215cec1d48}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="protocol.h">
@@ -46,9 +37,6 @@
     </ClInclude>
     <ClInclude Include="CMemoryPool.h">
       <Filter>Pool\Momery</Filter>
-    </ClInclude>
-    <ClInclude Include="CObjectPool.h">
-      <Filter>Pool\Object</Filter>
     </ClInclude>
     <ClInclude Include="struct.h">
       <Filter>Header Files</Filter>
@@ -77,9 +65,6 @@
     <ClInclude Include="CGameTimer.h">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="CPlayer.h">
-      <Filter>Obj\Player</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="mons.lua">
@@ -99,17 +84,11 @@
     <ClCompile Include="CMemoryPool.cpp">
       <Filter>Pool\Momery</Filter>
     </ClCompile>
-    <ClCompile Include="CObjectPool.cpp">
-      <Filter>Pool\Object</Filter>
-    </ClCompile>
     <ClCompile Include="CThread.cpp">
       <Filter>Thread</Filter>
     </ClCompile>
     <ClCompile Include="CGameTimer.cpp">
       <Filter>Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="CPlayer.cpp">
-      <Filter>Obj\Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

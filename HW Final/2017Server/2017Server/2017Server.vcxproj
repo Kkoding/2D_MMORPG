@@ -164,8 +164,6 @@
     </ClInclude>
     <ClInclude Include="CIocp.h" />
     <ClInclude Include="CMemoryPool.h" />
-    <ClInclude Include="CObjectPool.h" />
-    <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CThread.h" />
     <ClInclude Include="enum.h" />
     <ClInclude Include="lauxlib.h" />
@@ -183,8 +181,6 @@
     </ClCompile>
     <ClCompile Include="CIocp.cpp" />
     <ClCompile Include="CMemoryPool.cpp" />
-    <ClCompile Include="CObjectPool.cpp" />
-    <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CThread.cpp" />
     <ClCompile Include="server_main.cpp" />
   </ItemGroup>
