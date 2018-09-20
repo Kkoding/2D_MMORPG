@@ -43,6 +43,11 @@
 #define SC_STORE		6
 #define SC_LOGIN_FAILED 7
 
+
+#define NAME_LEN 50
+#define PHONE_LEN 20
+#define POS_LEN 400
+
 #pragma pack (push, 1)
 
 struct cs_packet_up {
@@ -215,15 +220,15 @@ struct CLIENT {
 
 	void SetInitiate()
 	{
-		x = 4;
-		y = 4;
 		curr_packet_size = 0;
 		prev_packet_data = 0;
+		x = 4;
+		y = 4;
+		level = 1;
+		hp = 100;
 		die = false;
+		attack = 50;
 		maxhp = 100;
-		connect = true;
-		exp = 0;
-
 	}
 
 protected:

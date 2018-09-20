@@ -23,6 +23,21 @@ private:
 	priority_queue <Timer_Event, vector<Timer_Event>, comparison> timer_queue;
 	mutex tq_lock;
 
+
+	////DB
+	SQLHDBC m_hdbc;
+	SQLHENV m_henv;
+	SQLRETURN m_retcode;
+	SQLWCHAR ID[NAME_LEN];
+	int xPos, yPos, iExp, iExps, iAtt, ihp, iLv;
+	SQLLEN LID = 0, LxPos = 0, LyPos = 0, L_lv, L_hp, L_exp, L_exps, L_att;
+	SQLHSTMT m_hstmt = 0;
+	SQLWCHAR dbID[NAME_LEN];
+	int db_x_pos, db_y_pos, db_lv, db_exp, db_exps, db_attack, db_hp;
+	SQLLEN S_ID = 0, S_xPos = 0, S_yPos = 0, S_lv, S_hp, S_exps, S_att, S_exp;
+	wchar_t m_sqldata[255];
+	char m_savebuf[255];
+
 public:
 
 	void Initialize_Server();
@@ -32,6 +47,10 @@ public:
 	void NPC_AI_Thread();
 	void Timer_Thread();
 
+
+	void InitializeDB();
+	void DB_thread();
+	void SavePositionToDB(int ci);
 
 	//////	NPC
 	void NPC_Attack(int);
@@ -136,4 +155,3 @@ public:
 	CThread();
 	~CThread();
 };
-

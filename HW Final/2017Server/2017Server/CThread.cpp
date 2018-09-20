@@ -201,6 +201,64 @@ void CThread::Accept_Thread()
 		g_clients[new_id]->recv_over.wsabuf.buf =
 			reinterpret_cast<CHAR *>(g_clients[new_id]->recv_over.IOCP_buf);
 		g_clients[new_id]->recv_over.wsabuf.len = sizeof(g_clients[new_id]->recv_over.IOCP_buf);
+		
+		///////////////////DB
+
+		m_retcode = SQLConnect(m_hdbc, (SQLWCHAR*)L"2015182002", SQL_NTS, (SQLWCHAR*)NULL, 0, NULL, 0);
+		// Allocate statement handle  
+		if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO)
+		{
+			m_retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_hdbc, &m_hstmt);
+			sprintf(id_buf, "EXEC dbo.load_state %s", client_id);
+			MultiByteToWideChar(CP_UTF8, 0, id_buf, strlen(id_buf), m_sqldata, sizeof m_sqldata / sizeof *m_sqldata);
+			m_sqldata[strlen(id_buf)] = '\0';
+			//Execute a SQL statement
+			m_retcode = SQLExecDirect(m_hstmt, m_sqldata, SQL_NTS);
+			if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO)
+			{
+				// Bind columns 1, 2, and 3  
+		//ÀÌ¸§ ·¾ hp °âÄ¡ °ø°Ý·Â ÃÑ°æÇèÄ¡ x,y
+				m_retcode = SQLBindCol(m_hstmt, 1, SQL_WCHAR, ID, NAME_LEN, &LID);
+				m_retcode = SQLBindCol(m_hstmt, 2, SQL_INTEGER, &iLv, POS_LEN, &L_lv);
+				m_retcode = SQLBindCol(m_hstmt, 3, SQL_INTEGER, &ihp, POS_LEN, &L_hp);
+				m_retcode = SQLBindCol(m_hstmt, 5, SQL_INTEGER, &iExp, POS_LEN, &L_exp);
+				m_retcode = SQLBindCol(m_hstmt, 6, SQL_INTEGER, &iAtt, POS_LEN, &L_att);
+				m_retcode = SQLBindCol(m_hstmt, 7, SQL_INTEGER, &iExps, POS_LEN, &L_exps);
+				m_retcode = SQLBindCol(m_hstmt, 8, SQL_INTEGER, &xPos, POS_LEN, &LxPos);
+				m_retcode = SQLBindCol(m_hstmt, 9, SQL_INTEGER, &yPos, POS_LEN, &LyPos);
+				// Fetch and print each row of data. On an error, display a message and exit.  
+				m_retcode = SQLFetch(m_hstmt);
+				if (m_retcode == SQL_ERROR || m_retcode == SQL_SUCCESS_WITH_INFO)
+					show_error();
+				if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+					wcout << "connect ID : " << ID << endl;
+					cout << " x : " << xPos << endl;
+					cout << " y : " << yPos << endl << endl;
+				}
+				else {
+					cout << "No Data \n";
+					SendDisconnectedPacket(new_id, new_id);
+					g_clients[new_id]->connect = false;
+					closesocket(new_client);
+					SQLDisconnect(m_hdbc);
+					continue;
+				}
+			}
+			// Process data  
+			if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+				SQLCancel(m_hstmt);
+				SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+			}
+			SQLDisconnect(m_hdbc);
+		}
+		g_clients[new_id]->x = xPos;
+		g_clients[new_id]->y = yPos;
+		g_clients[new_id]->attack = iAtt;
+		g_clients[new_id]->hp = ihp;
+		g_clients[new_id]->exp = iExp;
+		g_clients[new_id]->exp_sum = iExps;
+		g_clients[new_id]->level = iLv;
+		strcpy(g_clients[new_id]->id, client_id);
 
 
 		DWORD recv_flag = 0;
@@ -383,11 +441,92 @@ void CThread::Timer_Thread()
 				over->event_type = OP_RESPAWN;
 			if (E_REVIVAL == t.event)
 				over->event_type = OP_REVIVAL;
-
-
 			m_iocp.PQCS(t.object_id, &over->over);
 		}
 	}
+}
+
+void CThread::InitializeDB()
+{
+	std::wcout.imbue(std::locale("korean"));
+
+	
+
+	// Allocate environment handle  
+	m_retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &m_henv);
+
+	// Set the ODBC version environment attribute  
+	if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+		m_retcode = SQLSetEnvAttr(m_henv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER*)SQL_OV_ODBC3, 0);
+
+		// Allocate connection handle  
+		if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+			m_retcode = SQLAllocHandle(SQL_HANDLE_DBC, m_henv, &m_hdbc);
+
+			// Set login timeout to 5 seconds  
+			if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+				SQLSetConnectAttr(m_hdbc, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0);
+			}
+		}
+	}
+}
+
+void CThread::DB_thread()
+{
+	DWORD StartTime = GetTickCount();
+	while (true) {
+		if (GetTickCount() - StartTime > 2500) {
+			for (int i = 0; i < MAX_USER; ++i) {
+				if (false == g_clients[i]->connect)
+					continue;
+				SavePositionToDB(i);
+			}
+			StartTime = GetTickCount();
+		}
+	}
+}
+
+void CThread::SavePositionToDB(int ci)
+{
+	m_retcode = SQLConnect(m_hdbc, (SQLWCHAR*)L"2015182002", SQL_NTS, (SQLWCHAR*)NULL, 0, NULL, 0);
+
+	// Allocate statement handle  
+	if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+		m_retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_hdbc, &m_hstmt);
+		//ÀÌ¸§ ·¾ hp °âÄ¡ °ø°Ý·Â ÃÑ°æÇèÄ¡ x,y
+		sprintf(m_savebuf, "EXEC dbo.save_state %s, %d, %d, %d,%d,%d,%d,%d",
+			g_clients[ci]->id, g_clients[ci]->level, g_clients[ci]->hp, g_clients[ci]->exp,
+			g_clients[ci]->attack, g_clients[ci]->exp_sum, g_clients[ci]->x, g_clients[ci]->y);
+
+		MultiByteToWideChar(CP_UTF8, 0, m_savebuf, strlen(m_savebuf), m_sqldata, sizeof m_sqldata / sizeof *m_sqldata);
+		m_sqldata[strlen(m_savebuf)] = '\0';
+
+		m_retcode = SQLExecDirect(m_hstmt, m_sqldata, SQL_NTS);
+		if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+
+			// Bind columns 1, 2, and 3  
+			//int db_x_pos, db_y_pos, db_lv, db_exp, db_dxps,db_attack;
+			m_retcode = SQLBindCol(m_hstmt, 1, SQL_WCHAR, dbID, NAME_LEN, &S_ID);
+			m_retcode = SQLBindCol(m_hstmt, 2, SQL_INTEGER, &db_lv, POS_LEN, &S_lv);
+			m_retcode = SQLBindCol(m_hstmt, 3, SQL_INTEGER, &db_hp, POS_LEN, &S_hp);
+			m_retcode = SQLBindCol(m_hstmt, 5, SQL_INTEGER, &db_exp, POS_LEN, &S_exp);
+			m_retcode = SQLBindCol(m_hstmt, 6, SQL_INTEGER, &db_attack, POS_LEN, &S_att);
+			m_retcode = SQLBindCol(m_hstmt, 7, SQL_INTEGER, &db_exps, POS_LEN, &S_exps);
+			m_retcode = SQLBindCol(m_hstmt, 8, SQL_INTEGER, &db_x_pos, POS_LEN, &S_xPos);
+			m_retcode = SQLBindCol(m_hstmt, 9, SQL_INTEGER, &db_y_pos, POS_LEN, &S_yPos);
+
+			// Fetch and print each row of data. On an error, display a message and exit.  
+
+			m_retcode = SQLFetch(m_hstmt);
+			if (m_retcode == SQL_ERROR || m_retcode == SQL_SUCCESS_WITH_INFO)
+				show_error();
+
+			if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+				printf("ID : %s\tX : %d\tY : %d\n", dbID, db_x_pos, db_y_pos);
+			}
+		}
+	}
+	SQLDisconnect(m_hdbc);
 }
 
 void CThread::NPC_HP(int ci, int obj, unsigned char packet[])

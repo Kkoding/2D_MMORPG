@@ -50,6 +50,5 @@ using namespace chrono;
 extern CLIENT* g_clients[NUM_OF_NPC];
 
 #include "CThread.h"
-#include "CPlayer.h"
 
 
