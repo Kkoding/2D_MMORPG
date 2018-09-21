@@ -23,7 +23,6 @@ private:
 	priority_queue <Timer_Event, vector<Timer_Event>, comparison> timer_queue;
 	mutex tq_lock;
 
-
 	////DB
 	SQLHDBC m_hdbc;
 	SQLHENV m_henv;

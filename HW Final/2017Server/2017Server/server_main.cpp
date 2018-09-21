@@ -18,10 +18,10 @@ int main()
 	vector<thread*> vWork_thread;
 	CThread* th = new CThread();
 	g_MemoryPool = new CMemoryPool;
-
-	for (auto& cl : g_clients) 
-		cl = new CLIENT();
-	
+	int cnt = 0;
+	for (auto& cl : g_clients) {
+		cl = new CLIENT;
+	}
 
 	th->Initialize_Server();
 

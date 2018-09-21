@@ -6,6 +6,7 @@
 CMemoryPool::CMemoryPool()
 {
 	m_BlockAddr = 0;
+	m_CurrBlockCount = 0;
 	m_StartPoint = 0;
 }
 
@@ -13,6 +14,14 @@ CMemoryPool::CMemoryPool()
 CMemoryPool::~CMemoryPool()
 {
 	delete m_StartPoint;
+}
+
+void CMemoryPool::Curr()
+{
+
+	int n =  m_CurrBlockCount; 
+	cout << n << endl;
+
 }
 
 void* CMemoryPool::Allocate(size_t obj_size)
@@ -30,31 +39,27 @@ void* CMemoryPool::Allocate(size_t obj_size)
 			addr += sizeof(CLIENT);
 		}
 	}
-
 	if (0 == m_CurrBlockCount) return 0;
 
 	UCHAR* newblock = m_StartPoint + (obj_size * m_BlockAddr);
 	m_BlockAddr = *newblock;
 
 	m_CurrBlockCount--;
-
 	return (void*)newblock;
 }
 
-void CMemoryPool::Delocate(void * DeleteBlock, size_t Blocksize)
+void CMemoryPool::Delocate(void * DeleteBlock, ULONGLONG Blocksize)
 {
 	//오류체크
 	if (m_CurrBlockCount >= MAX_BLOCK) return;
 
-
-	*(static_cast<int *>(DeleteBlock)) = m_BlockAddr;
-
-
-	int distanceFromStart = static_cast<int>((static_cast<unsigned char *>(DeleteBlock) - m_StartPoint)
-		/ static_cast<int>(Blocksize));
+	*(reinterpret_cast<int *>(DeleteBlock)) = m_BlockAddr;
+	
+	
+	unsigned blocknum = (reinterpret_cast<unsigned char *>(DeleteBlock) - m_StartPoint) / reinterpret_cast<int>(&Blocksize);
+	int distanceFromStart = reinterpret_cast<UCHAR>(&blocknum);
 
 	m_BlockAddr = distanceFromStart;
 	++m_CurrBlockCount;
-
 
 }

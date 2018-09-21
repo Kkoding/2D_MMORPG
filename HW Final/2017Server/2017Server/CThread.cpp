@@ -833,7 +833,8 @@ void CThread::DisconnectClient(int ci)
 	g_clients[ci]->vl_lock.lock();
 	g_clients[ci]->view_list.clear();
 	g_clients[ci]->vl_lock.unlock();
-	delete[] g_clients;
+	
+	delete g_clients[ci];
 }
 
 void CThread::Player_Respawn(int ci)
